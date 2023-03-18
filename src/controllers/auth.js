@@ -36,11 +36,11 @@ export const createUser = async (ctx) => {
     }
 
     const insertResult = await query(
-      "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id",
+      "INSERT INTO users (email, password, role, status) VALUES ($1, $2, 'user', 'active') RETURNING user_id",
       [email, hashedPassword]
     );
     const user = insertResult.rows[0];
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET);
+    const token = jwt.sign({ userId: user.user_id }, JWT_SECRET);
 
     ctx.body = { token };
   } catch (error) {
@@ -77,7 +77,7 @@ export const authenticateUser = async (ctx) => {
       ctx.throw(401, "Invalid login credentials");
     }
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET);
+    const token = jwt.sign({ userId: user.user_id }, JWT_SECRET);
 
     ctx.body = { token };
   } catch (error) {

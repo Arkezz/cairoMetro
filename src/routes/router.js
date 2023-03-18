@@ -1,5 +1,10 @@
 import Router from "koa-router";
-import { createUser, authenticateUser } from "../controllers/auth.js";
+import {
+  createUser,
+  authenticateUser,
+  requestPasswordReset,
+  resetPassword,
+} from "../controllers/auth.js";
 import {
   purchaseTicket,
   viewTicketSubscriptions,
@@ -30,6 +35,8 @@ const router = new Router();
 // Authentication Routes
 router.post("/register", createUser);
 router.post("/login", authenticateUser);
+router.post("/request-password-reset", requestPasswordReset);
+router.post("/reset-password", resetPassword);
 
 // Ticket Routes
 router.post("/purchase-ticket", purchaseTicket);
