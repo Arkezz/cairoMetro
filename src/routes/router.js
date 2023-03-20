@@ -16,6 +16,7 @@ import {
 import {
   uploadSeniorRequest,
   approveSeniorRequest,
+  viewSeniorRequests,
 } from "../controllers/senior.js";
 import {
   createStation,
@@ -28,7 +29,11 @@ import {
   deleteRoute,
   updatePricingSchedule,
 } from "../controllers/route.js";
-import { approveRefundRequest } from "../controllers/refund.js";
+import {
+  uploadRefundRequest,
+  approveRefundRequest,
+  viewRefundRequests,
+} from "../controllers/refund.js";
 
 const router = new Router();
 
@@ -47,6 +52,7 @@ router.post("/refund-ticket", refundTicket);
 router.get("/check-pricing", checkPricing);
 
 // Senior Request Routes
+router.get("/view-senior-requests", viewSeniorRequests);
 router.post("/upload-senior-request", uploadSeniorRequest);
 router.post("/approve-senior-request", approveSeniorRequest);
 
@@ -62,6 +68,8 @@ router.delete("/delete-route/:id", deleteRoute);
 router.put("/update-pricing-schedule", updatePricingSchedule);
 
 // Refund Request Route
+router.get("/view-refund-requests", viewRefundRequests);
+router.post("/upload-refund-request", uploadRefundRequest);
 router.post("/approve-refund-request", approveRefundRequest);
 
 export default router;

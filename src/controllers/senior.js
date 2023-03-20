@@ -1,5 +1,7 @@
 import { query } from "../db.js";
 
+export const viewSeniorRequests = async (ctx) => {};
+
 // Upload a senior request
 export const uploadSeniorRequest = async (ctx) => {
   try {

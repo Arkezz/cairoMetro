@@ -4,7 +4,7 @@ import { query } from "../db.js";
 import logger from "../modules/logger.js";
 import { sendPasswordResetEmail } from "../modules/util.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "OhHangMeOhHangMe";
+const JWT_SECRET = process.env.JWT_SECRET || "HangMeOhHangMe";
 const PASSWORD_LENGTH = 8; // Use environment variables for sensitive data
 
 // Register a new user
