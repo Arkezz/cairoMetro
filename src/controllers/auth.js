@@ -9,10 +9,10 @@ const PASSWORD_LENGTH = 8; // Use environment variables for sensitive data
 
 // Register a new user
 export const createUser = async (ctx) => {
-  const { email, password } = ctx.request.body;
+  const { email, password, username } = ctx.request.body;
 
-  if (!email || !password) {
-    ctx.throw(400, "Missing email or password");
+  if (!email || !password || !username) {
+    ctx.throw(400, "Missing email, password, or username");
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     ctx.throw(400, "Invalid email address");
@@ -29,15 +29,18 @@ export const createUser = async (ctx) => {
   logger.info("Registering user: " + email);
 
   try {
-    const result = await query("SELECT * FROM users WHERE email = $1", [email]);
+    const result = await query(
+      "SELECT * FROM users WHERE email = $1 OR username = $2",
+      [email, username]
+    );
 
     if (result.rows.length !== 0) {
-      ctx.throw(409, "An account with that email already exists");
+      ctx.throw(409, "An account with that email or username already exists");
     }
 
     const insertResult = await query(
-      "INSERT INTO users (email, password, role, status) VALUES ($1, $2, 'user', 'active') RETURNING user_id",
-      [email, hashedPassword]
+      "INSERT INTO users (email, password, username, role, status) VALUES ($1, $2, $3, 'user', 'active') RETURNING user_id",
+      [email, hashedPassword, username]
     );
     const user = insertResult.rows[0];
     const token = jwt.sign({ userId: user.user_id }, JWT_SECRET);

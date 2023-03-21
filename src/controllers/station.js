@@ -1,4 +1,17 @@
+import logger from "pino";
 import { query } from "../db.js";
+
+export const viewAllStations = async (ctx) => {
+  try {
+    const result = await query("SELECT * FROM stations");
+    ctx.response.status = 200;
+    ctx.body = result.rows;
+  } catch (error) {
+    console.error(error);
+    ctx.response.status = 500;
+    ctx.body = "Internal server error";
+  }
+};
 
 // Create a new station
 export const createStation = async (ctx) => {

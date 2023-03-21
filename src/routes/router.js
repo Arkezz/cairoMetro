@@ -1,4 +1,5 @@
 import Router from "koa-router";
+import { getUserInfo } from "../controllers/user.js";
 import {
   createUser,
   authenticateUser,
@@ -19,6 +20,7 @@ import {
   viewSeniorRequests,
 } from "../controllers/senior.js";
 import {
+  viewAllStations,
   createStation,
   updateStation,
   deleteStation,
@@ -36,6 +38,9 @@ import {
 } from "../controllers/refund.js";
 
 const router = new Router();
+
+//User Routes
+router.get("/user-info", getUserInfo);
 
 // Authentication Routes
 router.post("/register", createUser);
@@ -57,6 +62,7 @@ router.post("/upload-senior-request", uploadSeniorRequest);
 router.post("/approve-senior-request", approveSeniorRequest);
 
 // Station Routes
+router.get("/view-all-stations", viewAllStations);
 router.post("/create-station", createStation);
 router.put("/update-station/:id", updateStation);
 router.delete("/delete-station/:id", deleteStation);
