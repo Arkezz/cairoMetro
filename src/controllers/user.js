@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { query } from "../db.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "HangMeOhHangMe";
+
 export const getUserInfo = async (ctx) => {
   try {
     // Get user ID from token
