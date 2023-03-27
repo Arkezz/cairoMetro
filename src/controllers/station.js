@@ -1,5 +1,8 @@
 import logger from "pino";
 import { query } from "../db.js";
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET || "HangMeOhHangMe";
 
 export const viewAllStations = async (ctx) => {
   try {
@@ -16,10 +19,10 @@ export const viewAllStations = async (ctx) => {
 // Create a new station
 export const createStation = async (ctx) => {
   try {
-    const { name, zone, color_code, latitude, longitude } = ctx.request.body;
+    const { name, line_id } = ctx.request.body;
     const result = await query(
-      "INSERT INTO stations (name, zone, color_code, latitude, longitude) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-      [name, zone, color_code, latitude, longitude]
+      "INSERT INTO stations (name, line_id) VALUES ($1, $2) RETURNING *",
+      [name, line_id]
     );
     ctx.response.status = 201;
     ctx.body = result.rows[0];
@@ -33,11 +36,11 @@ export const createStation = async (ctx) => {
 // Update an existing station
 export const updateStation = async (ctx) => {
   try {
-    const stationId = parseInt(ctx.params.id);
-    const { name, zone, color_code, latitude, longitude } = ctx.request.body;
+    const stationId = parseInt(ctx.params.station_id); // Change "id" to "station_id"
+    const { name, line_id } = ctx.request.body;
     const result = await query(
-      "UPDATE stations SET name=$1, zone=$2, color_code=$3, latitude=$4, longitude=$5, updated_at=NOW() WHERE station_id=$6 RETURNING *",
-      [name, zone, color_code, latitude, longitude, stationId]
+      "UPDATE stations SET name=$1, line_id=$2, updated_at=NOW() WHERE station_id=$3 RETURNING *",
+      [name, line_id, stationId]
     );
     if (result.rows.length === 0) {
       ctx.response.status = 404;
