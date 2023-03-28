@@ -1,4 +1,4 @@
-import logger from "pino";
+import logger from "../modules/logger.js";
 import { query } from "../db.js";
 import jwt from "jsonwebtoken";
 
@@ -10,7 +10,7 @@ export const viewAllStations = async (ctx) => {
     ctx.response.status = 200;
     ctx.body = result.rows;
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     ctx.response.status = 500;
     ctx.body = "Internal server error";
   }
@@ -20,6 +20,19 @@ export const viewAllStations = async (ctx) => {
 export const createStation = async (ctx) => {
   try {
     const { name, line_id } = ctx.request.body;
+    const token = ctx.request.headers.authorization.split(" ")[1];
+    console.log(token);
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const userId = decoded.userId;
+
+    //Check if the user has admin role
+    const user = await query("SELECT * FROM users WHERE user_id=$1", [userId]);
+    if (user.rows[0].role !== "admin") {
+      ctx.response.status = 401;
+      ctx.body = "Unauthorized";
+      return;
+    }
+
     const result = await query(
       "INSERT INTO stations (name, line_id) VALUES ($1, $2) RETURNING *",
       [name, line_id]
@@ -27,7 +40,7 @@ export const createStation = async (ctx) => {
     ctx.response.status = 201;
     ctx.body = result.rows[0];
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     ctx.response.status = 500;
     ctx.body = "Internal server error";
   }
@@ -36,8 +49,21 @@ export const createStation = async (ctx) => {
 // Update an existing station
 export const updateStation = async (ctx) => {
   try {
-    const stationId = parseInt(ctx.params.station_id); // Change "id" to "station_id"
+    const stationId = parseInt(ctx.params.id); // Change "id" to "station_id"
     const { name, line_id } = ctx.request.body;
+    const token = ctx.request.headers.authorization.split(" ")[1];
+    console.log(token);
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const userId = decoded.userId;
+
+    //Check if the user has admin role
+    const user = await query("SELECT * FROM users WHERE user_id=$1", [userId]);
+    if (user.rows[0].role !== "admin") {
+      ctx.response.status = 401;
+      ctx.body = "Unauthorized";
+      return;
+    }
+
     const result = await query(
       "UPDATE stations SET name=$1, line_id=$2, updated_at=NOW() WHERE station_id=$3 RETURNING *",
       [name, line_id, stationId]
@@ -50,7 +76,7 @@ export const updateStation = async (ctx) => {
       ctx.body = result.rows[0];
     }
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     ctx.response.status = 500;
     ctx.body = "Internal server error";
   }
@@ -60,6 +86,19 @@ export const updateStation = async (ctx) => {
 export const deleteStation = async (ctx) => {
   try {
     const stationId = parseInt(ctx.params.id);
+    const token = ctx.request.headers.authorization.split(" ")[1];
+    console.log(token);
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const userId = decoded.userId;
+
+    //Check if the user has admin role
+    const user = await query("SELECT * FROM users WHERE user_id=$1", [userId]);
+    if (user.rows[0].role !== "admin") {
+      ctx.response.status = 401;
+      ctx.body = "Unauthorized";
+      return;
+    }
+
     const result = await query(
       "DELETE FROM stations WHERE station_id=$1 RETURNING *",
       [stationId]
@@ -71,7 +110,7 @@ export const deleteStation = async (ctx) => {
       ctx.response.status = 204;
     }
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     ctx.response.status = 500;
     ctx.body = "Internal server error";
   }
