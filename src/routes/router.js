@@ -1,4 +1,5 @@
 import Router from "koa-router";
+import { checkAdminRole } from "../controllers/auth.js";
 import { getUserInfo } from "../controllers/user.js";
 import {
   createUser,
@@ -59,23 +60,23 @@ router.get("/check-pricing", checkPricing);
 // Senior Request Routes
 router.get("/view-senior-requests", viewSeniorRequests);
 router.post("/upload-senior-request", uploadSeniorRequest);
-router.post("/approve-senior-request", approveSeniorRequest);
+router.post("/approve-senior-request", checkAdminRole, approveSeniorRequest);
 
 // Station Routes
 router.get("/view-all-stations", viewAllStations);
-router.post("/create-station", createStation);
-router.put("/update-station/:id", updateStation);
-router.delete("/delete-station/:id", deleteStation);
+router.post("/create-station", checkAdminRole, createStation);
+router.put("/update-station/:id", checkAdminRole, updateStation);
+router.delete("/delete-station/:id", checkAdminRole, deleteStation);
 
 // Route Routes
-router.post("/create-route", createRoute);
-router.put("/update-route/:id", updateRoute);
-router.delete("/delete-route/:id", deleteRoute);
-router.put("/update-pricing-schedule", updatePricingSchedule);
+router.post("/create-route", checkAdminRole, createRoute);
+router.put("/update-route/:id", checkAdminRole, updateRoute);
+router.delete("/delete-route/:id", checkAdminRole, deleteRoute);
+router.put("/update-pricing-schedule", checkAdminRole, updatePricingSchedule);
 
 // Refund Request Route
 router.get("/view-refund-requests", viewRefundRequests);
 router.post("/upload-refund-request", uploadRefundRequest);
-router.post("/approve-refund-request", approveRefundRequest);
+router.post("/approve-refund-request", checkAdminRole, approveRefundRequest);
 
 export default router;

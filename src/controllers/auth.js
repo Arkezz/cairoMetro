@@ -136,3 +136,19 @@ export const resetPassword = async (ctx) => {
 export const requestPasswordReset = async (ctx) => {};
 
 export const emailPasswordReset = async (ctx) => {};
+
+export const checkAdminRole = async (ctx, next) => {
+  const token = ctx.request.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, JWT_SECRET);
+  const userId = decoded.userId;
+
+  //Check if the user has admin role
+  const user = await query("SELECT * FROM users WHERE user_id=$1", [userId]);
+  if (user.rows[0].role !== "admin") {
+    ctx.response.status = 401;
+    ctx.body = "Unauthorized";
+    return;
+  }
+
+  await next();
+};

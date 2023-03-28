@@ -20,18 +20,6 @@ export const viewAllStations = async (ctx) => {
 export const createStation = async (ctx) => {
   try {
     const { name, line_id } = ctx.request.body;
-    const token = ctx.request.headers.authorization.split(" ")[1];
-    console.log(token);
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const userId = decoded.userId;
-
-    //Check if the user has admin role
-    const user = await query("SELECT * FROM users WHERE user_id=$1", [userId]);
-    if (user.rows[0].role !== "admin") {
-      ctx.response.status = 401;
-      ctx.body = "Unauthorized";
-      return;
-    }
 
     const result = await query(
       "INSERT INTO stations (name, line_id) VALUES ($1, $2) RETURNING *",
@@ -51,18 +39,6 @@ export const updateStation = async (ctx) => {
   try {
     const stationId = parseInt(ctx.params.id); // Change "id" to "station_id"
     const { name, line_id } = ctx.request.body;
-    const token = ctx.request.headers.authorization.split(" ")[1];
-    console.log(token);
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const userId = decoded.userId;
-
-    //Check if the user has admin role
-    const user = await query("SELECT * FROM users WHERE user_id=$1", [userId]);
-    if (user.rows[0].role !== "admin") {
-      ctx.response.status = 401;
-      ctx.body = "Unauthorized";
-      return;
-    }
 
     const result = await query(
       "UPDATE stations SET name=$1, line_id=$2, updated_at=NOW() WHERE station_id=$3 RETURNING *",
@@ -86,18 +62,6 @@ export const updateStation = async (ctx) => {
 export const deleteStation = async (ctx) => {
   try {
     const stationId = parseInt(ctx.params.id);
-    const token = ctx.request.headers.authorization.split(" ")[1];
-    console.log(token);
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const userId = decoded.userId;
-
-    //Check if the user has admin role
-    const user = await query("SELECT * FROM users WHERE user_id=$1", [userId]);
-    if (user.rows[0].role !== "admin") {
-      ctx.response.status = 401;
-      ctx.body = "Unauthorized";
-      return;
-    }
 
     const result = await query(
       "DELETE FROM stations WHERE station_id=$1 RETURNING *",
