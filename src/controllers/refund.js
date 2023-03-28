@@ -50,25 +50,10 @@ export const approveRefundRequest = async (ctx) => {
   const { id, approved } = ctx.request.body;
 
   try {
-    const token = ctx.headers.authorization.split(" ")[1]; // extract token from authorization header
-    const decoded = jwt.verify(token, JWT_SECRET); // verify token and get the decoded payload
-    const admin_id = decoded.userId; // get user ID from decoded payload
-
-    // Check if user has admin role
-    const adminQuery = await query(
-      "SELECT * FROM user_roles WHERE user_id=? AND role='admin'",
-      [admin_id]
-    );
-    if (adminQuery.length === 0) {
-      ctx.status = 401;
-      ctx.body = "You do not have permission to approve refund requests.";
-      return;
-    }
-
     // update refund request status in the database
     const result = await query(
       "UPDATE refund_requests SET approved=?, admin_id=? WHERE id=?",
-      [approved, admin_id, id]
+      [approved, ctx.state.admin_id, id]
     );
     if (result.changedRows === 0) {
       ctx.status = 404;

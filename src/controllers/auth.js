@@ -150,5 +150,8 @@ export const checkAdminRole = async (ctx, next) => {
     return;
   }
 
+  // Add the admin_id to the context state
+  ctx.state.admin_id = userId;
+
   await next();
 };
