@@ -27,6 +27,7 @@ import {
   deleteStation,
 } from "../controllers/station.js";
 import {
+  viewAllRoutes,
   createRoute,
   updateRoute,
   deleteRoute,
@@ -69,6 +70,7 @@ router.put("/update-station/:id", checkAdminRole, updateStation);
 router.delete("/delete-station/:id", checkAdminRole, deleteStation);
 
 // Route Routes
+router.get("/view-all-routes", viewAllRoutes);
 router.post("/create-route", checkAdminRole, createRoute);
 router.put("/update-route/:id", checkAdminRole, updateRoute);
 router.delete("/delete-route/:id", checkAdminRole, deleteRoute);
