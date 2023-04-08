@@ -22,6 +22,12 @@ export const query = async (text, params) => {
   return res;
 };
 
+//Query that deletes a user from the database by their ID
+export const deleteUser = async (id) => {
+  const res = await query("DELETE FROM users WHERE id = $1", [id]);
+  return res;
+};
+
 // Handle errors in the database connection
 pool.on("error", (err, client) => {
   console.error("Unexpected error on idle client", err);

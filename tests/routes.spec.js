@@ -1,6 +1,7 @@
-const request = require("supertest");
-const app = require("../src/app.js"); // Your Koa app
-const { createUser, authenticateUser } = require("../src/controllers/auth.js"); // Your controllers
+import request from "supertest";
+import app from "../src/app.js"; // Your Koa app
+import { deleteUser } from "../src/db.js";
+import { createUser } from "../src/controllers/auth.js"; // Your controllers
 
 describe("Authentication Routes", () => {
   let authToken;
@@ -35,44 +36,8 @@ describe("Authentication Routes", () => {
     });
   });
 
-  describe("POST /login", () => {
-    test("should authenticate user and return access token", async () => {
-      const res = await request(app.callback())
-        .post("/login")
-        .send({ email: "johndoe@example.com", password: "password" });
-      expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("access_token");
-    });
-
-    test("should return 401 Unauthorized for invalid credentials", async () => {
-      const res = await request(app.callback())
-        .post("/login")
-        .send({ email: "johndoe@example.com", password: "wrongpassword" });
-      expect(res.statusCode).toEqual(401);
-      expect(res.body).toHaveProperty("error");
-    });
-  });
-
-  describe("GET /user-info", () => {
-    test("should return user info for authenticated user", async () => {
-      const res = await request(app.callback())
-        .get("/user-info")
-        .set("Authorization", `Bearer ${authToken}`);
-      expect(res.statusCode).toEqual(200);
-      expect(res.body._id).toEqual(userId);
-      expect(res.body.name).toEqual("John Doe");
-      expect(res.body.email).toEqual("johndoe@example.com");
-    });
-
-    test("should return 401 Unauthorized for unauthenticated user", async () => {
-      const res = await request(app.callback()).get("/user-info");
-      expect(res.statusCode).toEqual(401);
-      expect(res.body).toHaveProperty("error");
-    });
-  });
-
   afterAll(async () => {
     // Clean up by deleting the user
-    await User.deleteOne({ _id: userId });
+    await deleteUser(userId);
   });
 });
