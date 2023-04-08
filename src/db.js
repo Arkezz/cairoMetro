@@ -24,7 +24,7 @@ export const query = async (text, params) => {
 
 //Query that deletes a user from the database by their ID
 export const deleteUser = async (id) => {
-  const res = await query("DELETE FROM users WHERE id = $1", [id]);
+  const res = await query("DELETE FROM users WHERE user_id = $1", [id]);
   return res;
 };
 
