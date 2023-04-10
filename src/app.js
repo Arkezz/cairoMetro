@@ -3,6 +3,7 @@ import { koaBody } from "koa-body";
 import helmet from "koa-helmet";
 import cors from "@koa/cors";
 import compress from "koa-compress";
+import logger from "../src/modules/logger.js";
 
 import router from "./routes/router.js";
 

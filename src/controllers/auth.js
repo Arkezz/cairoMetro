@@ -64,73 +64,64 @@ export const authenticateUser = async (ctx) => {
 
   validateInput(ctx);
 
-  try {
-    const result = await query("SELECT * FROM users WHERE email=$1", [email]);
-    const user = result.rows[0];
+  const result = await query("SELECT * FROM users WHERE email=$1", [email]);
+  const user = result.rows[0];
 
-    // Check if user exists
-    if (!user) {
-      ctx.throw(401, "Invalid login credentials");
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    // Check if password is valid
-    if (!isPasswordValid) {
-      ctx.throw(401, "Invalid login credentials");
-    }
-
-    const token = jwt.sign({ userId: user.user_id }, JWT_SECRET);
-
-    ctx.body = { token };
-  } catch (error) {
-    logger.error(error);
+  // Check if user exists
+  if (!user) {
+    ctx.throw(401, "Invalid login credentials");
   }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  // Check if password is valid
+  if (!isPasswordValid) {
+    ctx.throw(401, "Invalid login credentials");
+  }
+
+  const token = jwt.sign({ userId: user.user_id }, JWT_SECRET);
+
+  ctx.body = { token };
 };
 
 //Reset password
 export const resetPassword = async (ctx) => {
   const { password, newPassword } = ctx.request.body;
 
-  try {
-    // Get user ID from token
-    const token = ctx.request.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const userId = decoded.userId;
+  // Get user ID from token
+  const token = ctx.request.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, JWT_SECRET);
+  const userId = decoded.userId;
 
-    // Query user info from database
-    const result = await query("SELECT password FROM users WHERE user_id=$1", [
-      userId,
-    ]);
+  // Query user info from database
+  const result = await query("SELECT password FROM users WHERE user_id=$1", [
+    userId,
+  ]);
 
-    if (result.rows.length === 0) {
-      ctx.throw(404, "User not found");
-    }
+  if (result.rows.length === 0) {
+    ctx.throw(404, "User not found");
+  }
 
-    // Return user info
-    const user = result.rows[0];
+  // Return user info
+  const user = result.rows[0];
 
-    logger.info(password + " " + user.password);
+  logger.info(password + " " + user.password);
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+  const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    // Check if password is valid
-    if (!isPasswordValid) {
-      ctx.throw(401, "Invalid login credentials");
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    const insertResult = await query(
-      "UPDATE users SET password = $1 WHERE user_id = $2",
-      [hashedPassword, userId]
-    );
-
-    ctx.body = { message: "Password changed successfully" };
-  } catch (error) {
-    logger.error(error);
+  // Check if password is valid
+  if (!isPasswordValid) {
     ctx.throw(401, "Invalid login credentials");
   }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  const insertResult = await query(
+    "UPDATE users SET password = $1 WHERE user_id = $2",
+    [hashedPassword, userId]
+  );
+
+  ctx.body = { message: "Password changed successfully" };
 };
 
 export const requestPasswordReset = async (ctx) => {};
